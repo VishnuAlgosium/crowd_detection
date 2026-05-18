@@ -1,0 +1,44 @@
+# ─────────────────────────────────────────────────────────────
+# config.yaml — Crowd Detection System
+# ─────────────────────────────────────────────────────────────
+
+camera:
+  rtsp_url: "rtsp://admin:diffuse123@192.168.0.183:554/cam/realmonitor?channel=1&subtype=0"
+  width: 1280
+  height: 720
+  fps: 15
+  rtsp_transport: "tcp"       # tcp | udp
+
+ffmpeg:
+  hwaccel: "cuda"             # cuda | none (fallback to CPU decode)
+  codec: "hevc_cuvid"         # hevc_cuvid | h264_cuvid
+  probe_size: 32
+  analyze_duration: 0
+  low_delay: true
+
+model:
+  confidence_threshold: 0.7
+  person_class_id: 1          # COCO class id for person
+  device: "cuda"              # cuda | cpu
+  iou_threshold: 0.4              # NMS IoU threshold
+
+heatmap:
+  decay: 0.94                 # 0.9=fast fade, 0.99=slow fade
+  alpha: 0.5                  # blend strength on frame (0.0-1.0)
+  sigma: 40                   # gaussian blob radius (pixels)
+  colormap: "JET"             # JET | HOT | INFERNO | TURBO
+
+display:
+  window_title: "Crowd Detection + Heatmap"
+  show_boxes: true
+  show_scores: true
+  show_hud: true
+  quit_key: "q"
+
+
+crowd:
+  min_people: 2               # min people in ONE cluster to trigger
+  max_distance: 150           # max pixel distance to be considered "together"
+  label: "CROWD DETECTED"
+  box_color: [0, 0, 255]
+  label_color: [0, 0, 255]
