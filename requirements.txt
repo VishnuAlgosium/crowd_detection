@@ -3,3 +3,5 @@ torchvision
 opencv-python
 numpy
 pyyaml
+scikit-learn
+scipy

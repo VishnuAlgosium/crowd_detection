@@ -20,25 +20,45 @@ model:
   confidence_threshold: 0.7
   person_class_id: 1          # COCO class id for person
   device: "cuda"              # cuda | cpu
-  iou_threshold: 0.4              # NMS IoU threshold
+  iou_threshold: 0.4           # NMS IoU threshold
+
+tracker:
+  iou_threshold: 0.3           # min IoU to match a detection to an existing track
+  max_age: 15                  # frames a track survives with no matching detection (~1s @ 15fps)
+  min_hits: 1                  # frames needed before a track is reported (1 = report immediately)
 
 heatmap:
-  decay: 0.94                 # 0.9=fast fade, 0.99=slow fade
-  alpha: 0.5                  # blend strength on frame (0.0-1.0)
-  sigma: 40                   # gaussian blob radius (pixels)
-  colormap: "JET"             # JET | HOT | INFERNO | TURBO
+  enabled: false                # <-- turn heatmap overlay ON/OFF here
+  decay: 0.94                  # 0.9=fast fade, 0.99=slow fade
+  alpha: 0.5                   # blend strength on frame (0.0-1.0)
+  sigma: 40                    # gaussian blob radius (pixels)
+  colormap: "JET"              # JET | HOT | INFERNO | TURBO
+
+snapshot:
+  enabled: true                  # <-- turn crowd snapshot saving ON/OFF here
+  mode: "event"                   # "event" = capped shots per tracked crowd event (recommended)
+                                   # "interval" = 1 shot every cooldown_sec per tracked event, no cap
+  save_dir: "snapshots"           # folder where crowd images are saved
+  cooldown_sec: 5                 # min seconds between snapshots of the SAME tracked event
+  event_gap_sec: 10               # an event expires if not matched again within this many seconds
+  max_snapshots_per_event: 1      # cap follow-up shots per event (0 = unlimited, "event" mode only)
+  min_overlap_ratio: 0.5          # Jaccard similarity of track-ID sets to count as "same" event;
+                                   # e.g. group {1,2} vs {1,3} overlap = 1/3 = 0.33 -> below threshold
+                                   # -> correctly treated as a DIFFERENT event, gets its own snapshot
+  filename_format: "crowd_%Y%m%d_%H%M%S_{count}p.jpg"
+  jpeg_quality: 90
 
 display:
   window_title: "Crowd Detection + Heatmap"
   show_boxes: true
   show_scores: true
+  show_ids: true                 # show each person's persistent tracker ID on their box
   show_hud: true
   quit_key: "q"
 
-
 crowd:
-  min_people: 2               # min people in ONE cluster to trigger
-  max_distance: 150           # max pixel distance to be considered "together"
+  min_people: 4                # min people in ONE cluster to trigger
+  max_distance: 300             # max pixel distance to be considered "together"
   label: "CROWD DETECTED"
   box_color: [0, 0, 255]
   label_color: [0, 0, 255]
